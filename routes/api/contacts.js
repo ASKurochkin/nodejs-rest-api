@@ -1,25 +1,96 @@
-const express = require('express')
+/* eslint-disable prefer-regex-literals */
+const {
+  listContacts,
+  getContactById,
+  removeContact,
+  addContact,
+  updateContact,
+} = require("../../models/contacts");
 
-const router = express.Router()
+const { httpError } = require("../../utils");
 
-router.get('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+const express = require("express");
 
-router.get('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+const Joi = require("joi");
 
-router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+const router = express.Router();
 
-router.delete('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+const checkSchema = Joi.object({
+  name: Joi.string().required(),
 
-router.put('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+      tlds: false,
+    })
+    .required(),
+    
+  phone: Joi.string().pattern(new RegExp("\\(\\d{3}\\) \\d{3}-\\d{4}")).required(),
+});
 
-module.exports = router
+router.get("/", async (req, res, next) => {
+  try {
+    const result = await listContacts();
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/:contactId", async (req, res, next) => {
+  try {
+    const { contactId } = req.params;
+    const result = await getContactById(contactId);
+    if (!result) {
+      throw httpError(404, "Not found");
+    }
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/", async (req, res, next) => {
+  try {
+    const { error } = checkSchema.validate(req.body);
+    if (error) {
+      throw httpError(400, error.message);
+    }
+    const result = await addContact(req.body);
+    res.status(201).json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.put("/:contactId", async (req, res, next) => {
+  try {
+    const { error } = checkSchema.validate(req.body);
+    if (error) {
+      throw httpError(400, error.message);
+    }
+    const { contactId } = req.params;
+    const result = await updateContact(contactId, req.body);
+    if (!result) {
+      throw httpError(404, "Not found");
+    }
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete("/:contactId", async (req, res, next) => {
+  try {
+    const { contactId } = req.params;
+    const result = await removeContact(contactId);
+    if (!result) {
+      throw httpError(404, "Not found");
+    }
+    res.status(200).json({ message: "contact deleted" });
+  } catch (err) {
+    next(err);
+  }
+});
+
+module.exports = router;
