@@ -1,7 +1,7 @@
-const { Contact, schemas } = require("../../models/contact");
+const Contact = require("../../models/contact");
 const { isValidId } = require("../../middlewares");
-
 const { httpError } = require("../../utils");
+const {checkSchema, updateFavoriteSchema} = require('../../schemas')
 
 const express = require("express");
 
@@ -31,7 +31,7 @@ router.get("/:contactId", isValidId, async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    const { error } = schemas.checkSchema.validate(req.body);
+    const { error } = checkSchema.validate(req.body);
     if (error) {
       throw httpError(400, error.message);
     }
@@ -44,7 +44,7 @@ router.post("/", async (req, res, next) => {
 
 router.put("/:contactId", isValidId, async (req, res, next) => {
   try {
-    const { error } = schemas.checkSchema.validate(req.body);
+    const { error } = checkSchema.validate(req.body);
     if (error) {
       throw httpError(400, error.message);
     }
@@ -63,7 +63,7 @@ router.put("/:contactId", isValidId, async (req, res, next) => {
 
 router.patch("/:contactId/favorite", isValidId, async (req, res, next) => {
   try {
-    const { error } = schemas.updateFavoriteSchema.validate(req.body);
+    const { error } = updateFavoriteSchema.validate(req.body);
     if (error) {
       throw httpError(404, "Missing field favorite");
     }
