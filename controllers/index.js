@@ -7,6 +7,8 @@ const {
   deleteContact,
 } = require("./contacts");
 
+const { register } = require("./auth");
+
 module.exports = {
   getAllContacts,
   getContactById,
@@ -14,4 +16,5 @@ module.exports = {
   updateContact,
   updateFavorite,
   deleteContact,
+  register,
 };
