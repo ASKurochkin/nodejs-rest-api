@@ -1,11 +1,9 @@
 const checkSchema = require('./checkSchema')
 const updateFavoriteSchema = require('./updateFavoriteSchema')
-const registerSchema = require('./registerSchema')
-const loginSchema = require('./loginSchema')
+const userSchema = require('./userSchema')
 
 module.exports = {
     checkSchema,
     updateFavoriteSchema,
-    registerSchema,
-    loginSchema
+    userSchema
 }
