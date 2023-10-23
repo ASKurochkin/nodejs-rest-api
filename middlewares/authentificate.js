@@ -11,6 +11,9 @@ const authentificate = async (req, res, next) => {
   if (bearer !== "Bearer") {
     next(httpError(401, "Invalid token type"));
   }
+  if(!jwt.decode(token)) {
+    next(httpError(401, "Invalid token"));
+  }
 
   try {
     const { id } = jwt.verify(token, SECRET_KEY);
