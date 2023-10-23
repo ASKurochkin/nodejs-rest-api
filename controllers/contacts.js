@@ -4,7 +4,10 @@ const Contact = require("../models/contact");
 
 const getAllContacts = async (req, res, next) => {
   try {
-    const result = await Contact.find();
+    const { _id: owner } = req.user;
+    const {page=1, limit=20} = req.query
+    const skip = (page -1)*limit
+    const result = await Contact.find({ owner }, "-createdAt -updatedAt", {skip, limit});
     res.status(200).json(result);
   } catch (err) {
     next(err);
@@ -25,12 +28,13 @@ const getContactById = async (req, res, next) => {
 };
 
 const addContact = async (req, res, next) => {
+  const { _id: owner } = req.user;
   try {
     const { error } = checkSchema.validate(req.body);
     if (error) {
       throw httpError(400, error.message);
     }
-    const result = await Contact.create(req.body);
+    const result = await Contact.create({ ...req.body, owner });
     res.status(201).json(result);
   } catch (err) {
     next(err);
