@@ -11,7 +11,7 @@ const nodemailerConfig = {
     user: "kurochkinac@yahoo.com",
     pass: YAHOO_PASSWORD,
   },
-  logger: true,
+  // logger: true,
 };
 
 const transport = nodemailer.createTransport(nodemailerConfig);
